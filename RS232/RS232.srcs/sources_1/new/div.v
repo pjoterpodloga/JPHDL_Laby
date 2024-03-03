@@ -28,7 +28,7 @@ module div
     
     initial
     begin
-        clk_o = 0;
+        clk_o = 1;
     end
     
     always @ (posedge clk_i or posedge rst_i)
@@ -52,7 +52,7 @@ module div
             counter = 0;
         end
         else if (rst_i)
-            clk_o = 0;
+            clk_o = 1;
     
     end
 

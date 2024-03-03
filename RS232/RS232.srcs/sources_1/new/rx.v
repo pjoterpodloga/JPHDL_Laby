@@ -44,6 +44,8 @@ module rx
     
     reg rx_enable = 1;
     
+    reg last_rx_clk = 0;
+    
     wire rx_clk;
     
     div #(.NDIV(NDIV)) clock
@@ -77,69 +79,79 @@ module rx
     always @ (posedge clk_i)
     begin
     
+        if (present_state == rx_stop)
+        begin
+            ready_o = 1;
+            data_o = buffor;
+        end
+        else
+            ready_o = 0;
+        
         if (rx_i == 0 && present_state == rx_start)
             rx_enable = 0;
             
-        else if (ready_o == 1)
+        else if (rx_i == 1 && present_state == rx_start)
             rx_enable = 1;
         
     end
     
-    always @ (posedge rx_clk)
+    always @ (posedge clk_i)
     begin
     
-        if (rx_i == 1 && present_state == rx_start && ~rx_enable)
-            present_state = next_state;
-        else if (present_state == rx_d0 && ~rx_enable)
+        if (rx_clk == 0 && last_rx_clk != rx_clk)    
         begin
-            present_state = next_state;
-            buffor[0] = rx_i;
+            last_rx_clk = rx_clk;
+            if (rx_i == 0 && present_state == rx_start && ~rx_enable)
+                present_state = next_state;
+            else if (present_state == rx_d0 && ~rx_enable)
+            begin
+                present_state = next_state;
+                buffor[0] = rx_i;
+            end
+            else if (present_state == rx_d1 && ~rx_enable)
+            begin
+                present_state = next_state;
+                buffor[1] = rx_i;
+            end
+            else if (present_state == rx_d2 && ~rx_enable)
+            begin
+                present_state = next_state;
+                buffor[2] = rx_i;
+            end
+            else if (present_state == rx_d3 && ~rx_enable)
+            begin
+                present_state = next_state;
+                buffor[3] = rx_i;
+            end
+            else if (present_state == rx_d4 && ~rx_enable)
+            begin
+                present_state = next_state;
+                buffor[4] = rx_i;
+            end
+            else if (present_state == rx_d5 && ~rx_enable)
+            begin
+                present_state = next_state;
+                buffor[5] = rx_i;
+            end
+            else if (present_state == rx_d6 && ~rx_enable)
+            begin
+                present_state = next_state;
+                buffor[6] = rx_i;
+            end
+            else if (present_state == rx_d7 && ~rx_enable)
+            begin
+                present_state = next_state;
+                buffor[7] = rx_i;
+            end
+            else if (rx_i == 1 && present_state == rx_stop)
+            begin
+                present_state = next_state;
+            end
+            else
+                present_state = rx_start;
         end
-        else if (present_state == rx_d1 && ~rx_enable)
-        begin
-            present_state = next_state;
-            buffor[1] = rx_i;
-        end
-        else if (present_state == rx_d2 && ~rx_enable)
-        begin
-            present_state = next_state;
-            buffor[2] = rx_i;
-        end
-        else if (present_state == rx_d3 && ~rx_enable)
-        begin
-            present_state = next_state;
-            buffor[3] = rx_i;
-        end
-        else if (present_state == rx_d4 && ~rx_enable)
-        begin
-            present_state = next_state;
-            buffor[4] = rx_i;
-        end
-        else if (present_state == rx_d5 && ~rx_enable)
-        begin
-            present_state = next_state;
-            buffor[5] = rx_i;
-        end
-        else if (present_state == rx_d6 && ~rx_enable)
-        begin
-            present_state = next_state;
-            buffor[6] = rx_i;
-        end
-        else if (present_state == rx_d7 && ~rx_enable)
-        begin
-            present_state = next_state;
-            buffor[7] = rx_i;
-        end
-        else if (rx_i == 1 && present_state == rx_stop)
-        begin
-            present_state = next_state;
-            data_o = buffor;
-            ready_o = 1;
-        end
-        else if (present_state == rx_start)
-            ready_o = 0;
         else
-            present_state = rx_start;
+            last_rx_clk = rx_clk;
     
     end
     

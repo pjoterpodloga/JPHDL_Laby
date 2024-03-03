@@ -29,7 +29,8 @@ module rx_tb(
     wire [7 : 0] data_o;
     wire ready_o;
     
-    parameter [7 : 0] data = 8'b1011_0101;
+    parameter [7 : 0] data1 = 8'b0101_1010;
+    parameter [7 : 0] data2 = 8'b0110_0110;
     
     rx DUT
     (rx_i, clk_i, data_o, ready_o);
@@ -48,16 +49,27 @@ module rx_tb(
     begin
         rx_i = 1;
         #10000  rx_i = 0;
+        #104166 rx_i = data1[0];
+        #104166 rx_i = data1[1];
+        #104166 rx_i = data1[2];
+        #104166 rx_i = data1[3];
+        #104166 rx_i = data1[4];
+        #104166 rx_i = data1[5];
+        #104166 rx_i = data1[6];
+        #104166 rx_i = data1[7];
         #104166 rx_i = 1;
+        #104166
         #104166 rx_i = 0;
+        #104166 rx_i = data2[0];
+        #104166 rx_i = data2[1];
+        #104166 rx_i = data2[2];
+        #104166 rx_i = data2[3];
+        #104166 rx_i = data2[4];
+        #104166 rx_i = data2[5];
+        #104166 rx_i = data2[6];
+        #104166 rx_i = data2[7];
         #104166 rx_i = 1;
-        #104166 rx_i = 1;
-        #104166 rx_i = 0;
-        #104166 rx_i = 1;
-        #104166 rx_i = 0;
-        #104166 rx_i = 1;
-        #104166 rx_i = 1;
-        #104166 
+        #104166
         #104166 $finish;
     end
     
