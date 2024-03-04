@@ -43,6 +43,9 @@ module top_tb(
         
         #5 rst_i = 1;
         #5 rst_i = 0;
+        #16
+        #5 rst_i = 1;
+        #5 rst_i = 0;
         #90 
         #10$finish; 
     end

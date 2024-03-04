@@ -35,27 +35,22 @@ module top #(parameter NDIV = 2)
     
     always @ (posedge clk_i or posedge rst_i)
     begin
-
-    if (rst_i)
-        counter = 0;
-    else
+    
+    if (rst_i) 
+        counter = 0; 
+    else if (clk_i)
         counter = counter + 1;
-
-    end 
-    
-    always @ (*)
+        
+    if (counter == NDIV / 2)
+        led_o <= 0;
+    else if (counter == NDIV)
     begin
-    
-        if (counter == NDIV/2)
-            led_o = 0;
-        else if (counter == NDIV)
-        begin
-            led_o = 1;
-            counter = 0;
-        end
-        else if (rst_i)
-            led_o = 0;
-    
+        counter = 0;
+        led_o <= 1;
+    end
+    else if (rst_i)
+        led_o <= 1;
+        
     end
     
 endmodule
