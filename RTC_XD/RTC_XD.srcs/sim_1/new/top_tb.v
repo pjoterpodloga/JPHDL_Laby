@@ -55,8 +55,14 @@ module top_tb ( );
     
     initial
     begin
-        
-    
+        #1_000          button_test_i = 1;
+        #60_000_000     button_test_i = 0;
+        #25_000_000
+        #10_000_000     rst_i = 1;
+        #20_000_000     rst_i = 0;
+        #1_000_000      rst_i = 1;
+        #60_000_000     rst_i = 0;
+        #188_000_000  
     
         $finish;
     end

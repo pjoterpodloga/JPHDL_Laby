@@ -31,16 +31,17 @@ module top
     output [7 : 0] led7_an_o
     );
     
-    wire [2 : 0] button;
+    wire [3 : 0] button;
     
     debounce debounce_btn_hr    (button_hr_i,   clk_i, button[2]);
-    debounce debounce_btn_min   (button_hr_i,   clk_i, button[1]);
-    debounce debounce_btn_test  (button_test_i, clk_i, button[0]);
+    debounce debounce_btn_min   (button_hr_i,   clk_i, button[3]);
+    debounce debounce_btn_test  (button_test_i, clk_i, button[1]);
+    debounce debounce_btn_rst   (rst_i, clk_i, button[0]);
     
     wire [15 : 0] seg_data;
     
-    seg_con segment_controller ({{16{0}}, seg_data}, clk_i, led7_an, led7_seg_o);
+    seg_con segment_controller ({{16{0}}, seg_data}, clk_i, led7_an_o, led7_seg_o);
     
-    clock Clock (clk_i, rst_i, button[0], button[2], button[1], seg_data);
+    clock Clock (clk_i, button[0], button[1], button[2], button[3], seg_data);
     
 endmodule
