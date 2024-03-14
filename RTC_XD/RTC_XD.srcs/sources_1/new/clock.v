@@ -41,6 +41,8 @@ module clock
     
     reg switch_div = 0;
     
+    reg last_clk_clock = 0;
+    
     div #(100_000_000)  div_x1      (clk_i, 0, clk_x1);
     div #(100_00)      div_x1000   (clk_i, 0, clk_x1000);
     
@@ -61,7 +63,7 @@ module clock
         switch_div = ~switch_div;
     end
     
-    always @ (posedge clk_clock or posedge rst_i)
+    always @ (*)
     begin
     
         if (rst_i)
@@ -72,8 +74,10 @@ module clock
             hourD <= 0;
         end
     
-        else
+        else if (clk_clock != last_clk_clock)
         begin
+            last_clk_clock = clk_clock;
+        
             minuteU = minuteU + 1;
             
             if (minuteU == 10)
@@ -101,6 +105,8 @@ module clock
             end
             
         end
+        else
+            last_clk_clock = clk_clock;
 
         data_o[3  : 0]   = minuteU;
         data_o[7  : 4]   = minuteD;
