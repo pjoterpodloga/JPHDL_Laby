@@ -40,7 +40,7 @@ module top
     
     wire [15 : 0] seg_data;
     
-    seg_con segment_controller ({{16{0}}, seg_data}, clk_i, led7_an_o, led7_seg_o);
+    seg_con segment_controller ({16'h0000, seg_data}, clk_i, led7_an_o, led7_seg_o);
     
     clock Clock (clk_i, button[0], button[1], button[2], button[3], seg_data);
     

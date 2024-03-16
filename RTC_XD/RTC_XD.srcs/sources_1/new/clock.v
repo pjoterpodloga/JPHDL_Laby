@@ -27,7 +27,7 @@ module clock
     input test_i,
     input hour_i,
     input minute_i,
-    output reg [15 : 0] data_o
+    output [15 : 0] data_o
     );
     
     reg [3 : 0] hourD = 0;
@@ -43,8 +43,8 @@ module clock
     
     reg last_clk_clock = 0;
     
-    div #(100_000_000)  div_x1      (clk_i, 0, clk_x1);
-    div #(100_00)      div_x1000   (clk_i, 0, clk_x1000);
+    div #(100_000_000)  div_x1     (clk_i, 1'b0, clk_x1);
+    div #(100_00)      div_x1000   (clk_i, 1'b0, clk_x1000);
     
     assign clk_clock = switch_div ? clk_x1000 : clk_x1;
     
@@ -54,8 +54,7 @@ module clock
         hourU <= 0;
         minuteD <= 0;
         minuteU <= 0;
-        
-        data_o[15 : 0] <= 0;
+
     end
     
     always @ (posedge test_i)
@@ -63,7 +62,12 @@ module clock
         switch_div = ~switch_div;
     end
     
-    always @ (*)
+    assign data_o[3  : 0]   = minuteU;
+    assign data_o[7  : 4]   = minuteD;
+    assign data_o[11 : 8]   = hourU;
+    assign data_o[15 : 12]  = hourD;
+    
+    always @ (posedge clk_clock, posedge rst_i)
     begin
     
         if (rst_i)
@@ -74,9 +78,8 @@ module clock
             hourD <= 0;
         end
     
-        else if (clk_clock != last_clk_clock)
+        else if (clk_clock)
         begin
-            last_clk_clock = clk_clock;
         
             minuteU = minuteU + 1;
             
@@ -105,13 +108,6 @@ module clock
             end
             
         end
-        else
-            last_clk_clock = clk_clock;
-
-        data_o[3  : 0]   = minuteU;
-        data_o[7  : 4]   = minuteD;
-        data_o[11 : 8]   = hourU;
-        data_o[15 : 12]  = hourD;
         
     end
     

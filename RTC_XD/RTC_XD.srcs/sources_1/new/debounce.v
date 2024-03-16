@@ -11,7 +11,7 @@ module debounce #(WAIT_TIME = 50)
     
     integer counter = 0;
     
-    div #(100_000) divider (clk_i, 0, debounce_clk);
+    div #(100_000) divider (clk_i, 1'b0, debounce_clk);
     
     initial
     begin
