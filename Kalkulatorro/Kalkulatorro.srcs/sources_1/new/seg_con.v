@@ -25,6 +25,7 @@ module seg_con
     input [31 : 0] seg_data_i,
     input clk_i,
     input rst_i,
+    
     output reg [7 : 0] an_o,
     output reg [7 : 0] seg_o
     );
@@ -48,7 +49,7 @@ module seg_con
                 4'b1100 : segChar = 8'b0110_0011;   // C
                 4'b1101 : segChar = 8'b1000_0101;   // D
                 4'b1110 : segChar = 8'b0110_0001;   // E
-                4'b1111 : segChar = 8'b0111_0001;   // F
+                4'b1111 : segChar = 8'b1111_1111;   // *blank* bylo F
                 default : segChar = 8'b1111_1111;   // *blank*
             endcase
         end
@@ -104,12 +105,12 @@ module seg_con
         endcase
     end
     
-    always @ (posedge an_clk or posedge rst_i)
+    always @ (posedge an_clk, posedge rst_i)
     begin
         if (rst_i)
-            currentState = anoff_state;
-        else if (an_clk)
             currentState = nextState;
+        else
+            currentState = anoff_state;
     end
 
     
