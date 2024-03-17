@@ -39,9 +39,9 @@ module calculator
     parameter opt    = 4'b1001;
     
     parameter d0_n2  = 4'b0000;
-    parameter d1_n2  = 4'b0000;
-    parameter d2_n2  = 4'b0000;
-    parameter d3_n2  = 4'b0000;
+    parameter d1_n2  = 4'b0010;
+    parameter d2_n2  = 4'b0100;
+    parameter d3_n2  = 4'b0110;
     
     reg [3 : 0] currentState = d0_n1;
     reg [3 : 0] nextState    = d1_n1;
@@ -57,12 +57,28 @@ module calculator
     assign data_o[27 : 24]  = segChar[6];
     assign data_o[31 : 28]  = segChar[7];
     
-    reg [3 : 0] first_number    [3 : 0];
-    reg [3 : 0] second_number   [3 : 0];
+    reg  [3 : 0] first_number    [3 : 0];
+    reg  [3 : 0] second_number   [3 : 0];
     
-    reg [1 : 0] operation = 2'b00;
+    wire [3 : 0] result_add [3 : 0];
+    wire [3 : 0] result_sub [3 : 0];
+    
+    reg [1 : 0] operation = 2'b01;
     
     reg [7 : 0] leading_zero = 0;
+    
+    wire [3 : 0] carry;
+    wire [3 : 0] borrow;
+    
+    adder_bcd adder_1 (first_number[0], second_number[0], 1'b0,     result_add[0], carry[0]);
+    adder_bcd adder_2 (first_number[1], second_number[1], carry[0], result_add[1], carry[1]);
+    adder_bcd adder_3 (first_number[2], second_number[2], carry[1], result_add[2], carry[2]);
+    adder_bcd adder_4 (first_number[3], second_number[3], carry[2], result_add[3], carry[3]);
+    
+    subtractor_bcd sub_1 (first_number[0], second_number[0], 1'b0,      result_sub[0], borrow[0]);
+    subtractor_bcd sub_2 (first_number[1], second_number[1], borrow[0], result_sub[1], borrow[1]);
+    subtractor_bcd sub_3 (first_number[2], second_number[2], borrow[1], result_sub[2], borrow[2]);
+    subtractor_bcd sub_4 (first_number[3], second_number[3], borrow[2], result_sub[3], borrow[3]);
     
     initial
     begin
@@ -76,7 +92,7 @@ module calculator
         second_number[2] = 4'b0000;
         second_number[3] = 4'b0000;
         
-        operation = 2'b00;
+        operation = 2'b01;
     end
     
     always @ (posedge clk_i)
@@ -165,10 +181,26 @@ module calculator
                 begin
                     // DO THE MATH!
                     // result => first_number
-                    first_number[0] = 4'b0000;
-                    first_number[1] = 4'b0000;
-                    first_number[2] = 4'b0000;
-                    first_number[3] = 4'b0000;
+                    
+                    if (!operation[1])
+                    begin
+                        first_number[0] = result_add[0];
+                        first_number[1] = result_add[1];
+                        first_number[2] = result_add[2];
+                        first_number[3] = result_add[3];
+                    end
+                    else
+                    begin
+                        first_number[0] = result_sub[0];
+                        first_number[1] = result_sub[1];
+                        first_number[2] = result_sub[2];
+                        first_number[3] = result_sub[3];
+                    end
+                    
+                    second_number[0] = 4'b0000;
+                    second_number[1] = 4'b0000;
+                    second_number[2] = 4'b0000;
+                    second_number[3] = 4'b0000;
                     
                     currentState = opt;
                 end
