@@ -107,7 +107,7 @@ module seg_con
     
     always @ (posedge an_clk, posedge rst_i)
     begin
-        if (rst_i)
+        if (~rst_i)
             currentState = nextState;
         else
             currentState = anoff_state;

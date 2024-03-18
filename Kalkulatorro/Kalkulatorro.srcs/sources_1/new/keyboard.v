@@ -40,7 +40,8 @@ module keyboard
     parameter   ps2_data5   =   4'b0110;
     parameter   ps2_data6   =   4'b0111;
     parameter   ps2_data7   =   4'b1000;
-    parameter   ps2_stop    =   4'b1001;
+    parameter   ps2_parity  =   4'b1001;
+    parameter   ps2_stop    =   4'b1010;
     parameter   ps2_fail    =   4'b1111;
 
 //  TABLICA KONWERSJI ZNAKOW
@@ -97,7 +98,7 @@ module keyboard
     
     wire ps2_internal_clk;
     
-    div #(6_667) ps2_internal_clock  
+    div #(6_666) ps2_internal_clock  
     (
         clk_i,
         ps2_enable,
@@ -109,6 +110,7 @@ module keyboard
         ready = 0;
         ps2_enable = 1;
         ps2_buffor = 8'h00;
+        data_o = 3'b000;
     end
     
     always @ (currentState)
@@ -116,12 +118,15 @@ module keyboard
         case (currentState)
             ps2_fail    :   nextState = ps2_start;
             ps2_start   :   nextState = ps2_data0;
+            ps2_data0   :   nextState = ps2_data1;
             ps2_data1   :   nextState = ps2_data2;
             ps2_data2   :   nextState = ps2_data3;
+            ps2_data3   :   nextState = ps2_data4;
             ps2_data4   :   nextState = ps2_data5;
             ps2_data5   :   nextState = ps2_data6;
             ps2_data6   :   nextState = ps2_data7;
-            ps2_data7   :   nextState = ps2_stop;
+            ps2_data7   :   nextState = ps2_parity;
+            ps2_parity  :   nextState = ps2_stop;
             ps2_stop    :   nextState = ps2_start;
             default     :   nextState = ps2_fail;
         endcase
@@ -139,7 +144,7 @@ module keyboard
             begin
                ps2_enable = 0;
             end
-            else if (currentState == ps2_stop)
+            else if (currentState == ps2_start && ps2_data_i == 1)
             begin
                 ps2_enable = 1;
                 
@@ -196,7 +201,11 @@ module keyboard
             begin
                 ps2_buffor[7] = ps2_data_i;
             end
-            else if (currentState == ps2_stop && ps2_data_i == 0)
+            else if (currentState == ps2_parity)
+            begin
+                
+            end
+            else if (currentState == ps2_stop && ps2_data_i == 1)
             begin
                 ready = 1;
             end

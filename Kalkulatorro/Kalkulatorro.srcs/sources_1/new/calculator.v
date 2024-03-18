@@ -97,30 +97,20 @@ module calculator
     
     always @ (posedge clk_i)
     begin
-        
-        leading_zero[0] <= 1'b1;
-        leading_zero[1] <= first_number[1] ? 1 : 0;
-        leading_zero[2] <= first_number[2] ? 1 : 0;
-        leading_zero[3] <= first_number[3] ? 1 : 0;
-        
-        leading_zero[4] <= 1'b1;
-        leading_zero[5] <= second_number[1] ? 1 : 0;
-        leading_zero[6] <= second_number[2] ? 1 : 0;
-        leading_zero[7] <= second_number[3] ? 1 : 0;
     
         if (currentState[0])
         begin
-            segChar[0] <= leading_zero[0] ? first_number[0] : 4'b1111;
-            segChar[1] <= leading_zero[1] ? first_number[1] : 4'b1111;
-            segChar[2] <= leading_zero[2] ? first_number[2] : 4'b1111;
-            segChar[3] <= leading_zero[3] ? first_number[3] : 4'b1111;
+            segChar[0] <= first_number[0];
+            segChar[1] <= first_number[1];
+            segChar[2] <= first_number[2];
+            segChar[3] <= first_number[3];
         end
         else
         begin
-            segChar[0] <= leading_zero[0] ? second_number[0] : 4'b1111;
-            segChar[1] <= leading_zero[1] ? second_number[1] : 4'b1111;
-            segChar[2] <= leading_zero[2] ? second_number[2] : 4'b1111;
-            segChar[3] <= leading_zero[3] ? second_number[3] : 4'b1111;
+            segChar[0] <= second_number[0];
+            segChar[1] <= second_number[1];
+            segChar[2] <= second_number[2];
+            segChar[3] <= second_number[3];
         end
         
         segChar[4] <= 4'b1111;

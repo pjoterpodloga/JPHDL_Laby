@@ -50,11 +50,11 @@ module div #(NDIV = 2)
             
             if (counter == NDIV/2)
             begin
-                clk_o <= 0;
+                clk_o <= 1;
             end
             else if (counter == NDIV - 1)
             begin
-                clk_o <= 1;
+                clk_o <= 0;
                 counter <= 0;
             end
             
